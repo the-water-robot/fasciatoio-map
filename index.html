@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FasciatoioMap 🗺️</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="sidebar">
+    <h1>🗺️ FasciatoioMap</h1>
+    <p class="subtitle">Trova un fasciatoio vicino a te</p>
+
+    <button id="btn-aggiungi" class="btn-primary">+ Aggiungi locale</button>
+
+    <div id="form-aggiungi" class="nascosto">
+      <h2>Nuovo locale</h2>
+
+      <label>Nome locale *
+        <input type="text" id="input-nome" placeholder="Es. Bar Centrale" />
+      </label>
+
+      <label>Indirizzo *
+        <input type="text" id="input-indirizzo" placeholder="Inizia a scrivere..." />
+      </label>
+
+      <label>Note
+        <textarea id="input-note" placeholder="Es. Fasciatoio nel bagno donne, al piano -1..."></textarea>
+      </label>
+
+      <label class="checkbox">
+        <input type="checkbox" id="input-accessibile" />
+        Accessibile ai disabili
+      </label>
+
+      <label>Il tuo nickname
+        <input type="text" id="input-nickname" placeholder="Es. Marco" />
+      </label>
+
+      <div class="form-buttons">
+        <button id="btn-salva" class="btn-primary">Salva</button>
+        <button id="btn-annulla" class="btn-secondary">Annulla</button>
+      </div>
+
+      <p id="form-errore" class="errore nascosto"></p>
+    </div>
+
+    <div id="lista-locali"></div>
+  </div>
+
+  <div id="map"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- I nostri script -->
+  <script src="supabase.js"></script>
+  <script src="maps.js"></script>
+  <script src="app.js"></script>
+
+  <!-- Google Maps — sostituisci YOUR_API_KEY con la tua key -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap"
+    async defer>
+  </script>
+
+</body>
+</html>
