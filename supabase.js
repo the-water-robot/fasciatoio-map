@@ -4,11 +4,11 @@
 const SUPABASE_URL = 'https://xxxx.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJ...'
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 // Carica tutti i locali dal database
 async function caricaLocali() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('locali')
     .select('*')
     .order('created_at', { ascending: false })
@@ -23,7 +23,7 @@ async function caricaLocali() {
 
 // Inserisce un nuovo locale nel database
 async function aggiungiLocale({ nome, indirizzo, lat, lng, note, accessibile, aggiunto_da }) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('locali')
     .insert([{ nome, indirizzo, lat, lng, note, accessibile, aggiunto_da }])
     .select()

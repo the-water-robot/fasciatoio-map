@@ -3,3 +3,4 @@ API-key
 *.env
 .env*
 .claude/
+github-key

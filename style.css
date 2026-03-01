@@ -172,6 +172,59 @@ textarea {
   height: 100vh;
 }
 
+/* ── Toggle sidebar (mobile) ── */
+.btn-toggle-sidebar {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 20;
+  background: #2d6a4f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .btn-toggle-sidebar {
+    display: block;
+  }
+
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60vh;
+    min-width: unset;
+    z-index: 15;
+    transform: translateY(100vh);
+    transition: transform 0.3s ease;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
+    padding-top: 16px;
+  }
+
+  #sidebar.aperto {
+    transform: translateY(40vh);
+  }
+
+  #map {
+    height: 100vh;
+    width: 100%;
+  }
+}
+
 /* ── Utilità ── */
 .nascosto {
   display: none;

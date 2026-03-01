@@ -39,6 +39,13 @@ function collegaEventiUI() {
   const btnSalva = document.getElementById('btn-salva')
   const formAggiungi = document.getElementById('form-aggiungi')
 
+  // Toggle sidebar (mobile)
+  const btnToggle = document.getElementById('btn-toggle-sidebar')
+  const sidebar = document.getElementById('sidebar')
+  btnToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('aperto')
+  })
+
   // Mostra il form
   btnAggiungi.addEventListener('click', () => {
     formAggiungi.classList.remove('nascosto')
