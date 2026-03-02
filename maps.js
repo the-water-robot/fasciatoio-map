@@ -122,7 +122,7 @@ function aggiungiMarker(locale) {
 
   marker.addEventListener('gmp-click', () => {
     if (markerSelezionato) markerSelezionato.close()
-    infoWindow.open(mappa, marker)
+    infoWindow.open({ anchor: marker, map: mappa })
     markerSelezionato = infoWindow
   })
 
