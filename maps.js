@@ -107,6 +107,7 @@ function aggiungiMarker(locale) {
     map: mappa,
     title: locale.nome,
     content: pin,
+    gmpClickable: true,
   })
 
   const contenutoPopup = `
