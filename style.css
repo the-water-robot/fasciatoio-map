@@ -157,10 +157,25 @@ textarea {
   box-shadow: 0 2px 8px rgba(0,137,123,0.15);
 }
 
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
 .locale-card h3 {
   font-size: 0.95rem;
   color: #00897B;
-  margin-bottom: 4px;
+}
+
+.badge-distanza {
+  font-size: 0.75rem;
+  color: #555;
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
 }
 
 .locale-card p {

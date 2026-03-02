@@ -3,6 +3,7 @@
 let mappa
 let selectedPlace = null
 let markerSelezionato = null
+let posizioneUtente = null
 const markers = {}
 
 // Inizializza la mappa usando importLibrary (async)
@@ -28,6 +29,7 @@ async function initMappa() {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude }
+        posizioneUtente = userPos
         mappa.setCenter(userPos)
 
         const dot = document.createElement('div')
@@ -129,11 +131,30 @@ function aggiungiMarker(locale) {
 
 // Centra la mappa su un locale specifico
 function centraSuLocale(locale) {
-  mappa.setCenter({ lat: locale.lat, lng: locale.lng })
-  mappa.setZoom(16)
-  if (markers[locale.id]) {
-    google.maps.event.trigger(markers[locale.id], 'click')
+  // Su mobile chiudi la sidebar prima di centrare
+  const sidebar = document.getElementById('sidebar')
+  if (window.innerWidth <= 768) {
+    sidebar.classList.remove('aperto')
   }
+
+  setTimeout(() => {
+    mappa.setCenter({ lat: locale.lat, lng: locale.lng })
+    mappa.setZoom(16)
+    if (markers[locale.id]) {
+      google.maps.event.trigger(markers[locale.id], 'click')
+    }
+  }, window.innerWidth <= 768 ? 350 : 0)
+}
+
+// Calcola distanza in km tra due coordinate (formula Haversine)
+function calcolaDistanzaKm(lat1, lng1, lat2, lng2) {
+  const R = 6371
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLng = (lng2 - lng1) * Math.PI / 180
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
 // Legge le coordinate dal risultato dell'autocomplete o geocoding

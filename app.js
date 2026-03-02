@@ -20,10 +20,19 @@ async function caricaERenderLocali() {
 
 // Crea una card HTML per un locale nella sidebar
 function creaCardLocale(locale) {
+  let distanzaHtml = ''
+  if (posizioneUtente) {
+    const km = calcolaDistanzaKm(posizioneUtente.lat, posizioneUtente.lng, locale.lat, locale.lng)
+    distanzaHtml = `<span class="badge-distanza">${km < 1 ? (km * 1000).toFixed(0) + ' m' : km.toFixed(1) + ' km'}</span>`
+  }
+
   const card = document.createElement('div')
   card.className = 'locale-card'
   card.innerHTML = `
-    <h3>${locale.nome}</h3>
+    <div class="card-header">
+      <h3>${locale.nome}</h3>
+      ${distanzaHtml}
+    </div>
     <p>${locale.indirizzo || 'Indirizzo non specificato'}</p>
     ${locale.note ? `<p>${locale.note}</p>` : ''}
     ${locale.accessibile ? `<span class="badge-accessibile">♿ Accessibile</span>` : ''}
