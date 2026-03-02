@@ -1,18 +1,23 @@
 // maps.js — logica Google Maps
 
 let mappa
-let autocomplete
+let selectedPlace = null
 let markerSelezionato = null
 const markers = {}
 
-// Inizializza la mappa — chiamata automaticamente da Google Maps come callback
-function initMap() {
+// Inizializza la mappa usando importLibrary (async)
+async function initMappa() {
+  const { Map } = await google.maps.importLibrary('maps')
+  const { AdvancedMarkerElement } = await google.maps.importLibrary('marker')
+  const { Place, PlaceAutocompleteElement } = await google.maps.importLibrary('places')
+
   // Centro di default: Milano
   const centroDef = { lat: 45.4641, lng: 9.1919 }
 
-  mappa = new google.maps.Map(document.getElementById('map'), {
+  mappa = new Map(document.getElementById('map'), {
     center: centroDef,
     zoom: 13,
+    mapId: 'fasciatoio-map',
     mapTypeControl: false,
     fullscreenControl: false,
     streetViewControl: false,
@@ -28,26 +33,46 @@ function initMap() {
     )
   }
 
-  // Inizializza autocomplete sull'input indirizzo
-  const inputIndirizzo = document.getElementById('input-indirizzo')
-  autocomplete = new google.maps.places.Autocomplete(inputIndirizzo, {
-    types: ['establishment', 'geocode'],
+  // Inizializza PlaceAutocompleteElement
+  const placeAutocomplete = new PlaceAutocompleteElement({
     componentRestrictions: { country: 'it' },
   })
+  placeAutocomplete.id = 'place-autocomplete'
+
+  const inputIndirizzo = document.getElementById('input-indirizzo')
+  inputIndirizzo.parentNode.replaceChild(placeAutocomplete, inputIndirizzo)
+
+  placeAutocomplete.addEventListener('gmp-placeselect', async (e) => {
+    const place = e.place
+    await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] })
+    selectedPlace = {
+      lat: place.location.lat(),
+      lng: place.location.lng(),
+      indirizzo: place.formattedAddress || place.displayName,
+    }
+  })
+
+  // Salva i costruttori per uso globale
+  window._AdvancedMarkerElement = AdvancedMarkerElement
 
   // Inizializza l'app dopo che la mappa è pronta
   initApp()
 }
 
+// Avvia
+initMappa()
+
 // Aggiunge un marker sulla mappa per un locale
 function aggiungiMarker(locale) {
-  const marker = new google.maps.Marker({
+  const pin = document.createElement('div')
+  pin.textContent = '🍼'
+  pin.style.fontSize = '28px'
+
+  const marker = new window._AdvancedMarkerElement({
     position: { lat: locale.lat, lng: locale.lng },
     map: mappa,
     title: locale.nome,
-    icon: {
-      url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
-    },
+    content: pin,
   })
 
   const contenutoPopup = `
@@ -81,11 +106,8 @@ function centraSuLocale(locale) {
 
 // Legge le coordinate dal risultato dell'autocomplete
 function getCoordinateDaAutocomplete() {
-  const place = autocomplete.getPlace()
-  if (!place || !place.geometry) return null
-  return {
-    lat: place.geometry.location.lat(),
-    lng: place.geometry.location.lng(),
-    indirizzo: place.formatted_address || document.getElementById('input-indirizzo').value,
-  }
+  if (!selectedPlace) return null
+  const result = selectedPlace
+  selectedPlace = null
+  return result
 }

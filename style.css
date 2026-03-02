@@ -172,6 +172,13 @@ textarea {
   height: 100vh;
 }
 
+/* ── Place Autocomplete ── */
+gmp-place-autocomplete {
+  width: 100%;
+  --gmpx-color-surface: white;
+  --gmpx-color-on-surface: #333;
+}
+
 /* ── Toggle sidebar (mobile) ── */
 .btn-toggle-sidebar {
   display: none;

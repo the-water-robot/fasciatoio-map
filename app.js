@@ -123,7 +123,8 @@ function mostraErrore(messaggio) {
 // Resetta e nasconde il form
 function resetForm() {
   document.getElementById('input-nome').value = ''
-  document.getElementById('input-indirizzo').value = ''
+  const placeInput = document.getElementById('place-autocomplete')
+  if (placeInput) placeInput.value = ''
   document.getElementById('input-note').value = ''
   document.getElementById('input-accessibile').checked = false
   document.getElementById('input-nickname').value = ''
