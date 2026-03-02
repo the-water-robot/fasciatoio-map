@@ -23,11 +23,23 @@ async function initMappa() {
     streetViewControl: false,
   })
 
-  // Prova a centrare sulla posizione dell'utente
+  // Prova a centrare sulla posizione dell'utente e mostra marker
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        mappa.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+        const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude }
+        mappa.setCenter(userPos)
+
+        const dot = document.createElement('div')
+        dot.style.cssText = 'width:16px;height:16px;background:#4285F4;border:3px solid white;border-radius:50%;box-shadow:0 0 8px rgba(66,133,244,0.5);'
+
+        new AdvancedMarkerElement({
+          position: userPos,
+          map: mappa,
+          title: 'La tua posizione',
+          content: dot,
+          zIndex: 999,
+        })
       },
       () => console.log('Geolocalizzazione non disponibile, uso Milano come default')
     )
@@ -86,7 +98,7 @@ function aggiungiMarker(locale) {
 
   const infoWindow = new google.maps.InfoWindow({ content: contenutoPopup })
 
-  marker.addListener('click', () => {
+  marker.addEventListener('gmp-click', () => {
     if (markerSelezionato) markerSelezionato.close()
     infoWindow.open(mappa, marker)
     markerSelezionato = infoWindow
