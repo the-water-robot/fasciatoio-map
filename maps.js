@@ -95,9 +95,10 @@ initMappa()
 
 // Aggiunge un marker sulla mappa per un locale
 function aggiungiMarker(locale) {
-  const pin = document.createElement('div')
-  pin.textContent = '🍼'
-  pin.style.fontSize = '28px'
+  const pin = document.createElement('img')
+  pin.src = 'assets/pin-marker.png'
+  pin.style.width = '36px'
+  pin.style.height = '36px'
 
   const marker = new window._AdvancedMarkerElement({
     position: { lat: locale.lat, lng: locale.lng },
@@ -111,7 +112,7 @@ function aggiungiMarker(locale) {
       <strong>${locale.nome}</strong><br/>
       <span style="color:#888; font-size:0.85rem">${locale.indirizzo || ''}</span>
       ${locale.note ? `<p style="margin-top:6px; font-size:0.85rem">${locale.note}</p>` : ''}
-      ${locale.accessibile ? `<span style="color:#2d6a4f; font-size:0.8rem">♿ Accessibile</span>` : ''}
+      ${locale.accessibile ? `<span style="color:#00897B; font-size:0.8rem">♿ Accessibile</span>` : ''}
     </div>
   `
 
