@@ -55,12 +55,31 @@ async function initMappa() {
   inputIndirizzo.parentNode.replaceChild(placeAutocomplete, inputIndirizzo)
 
   placeAutocomplete.addEventListener('gmp-placeselect', async (e) => {
-    const place = e.place
-    await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] })
-    selectedPlace = {
-      lat: place.location.lat(),
-      lng: place.location.lng(),
-      indirizzo: place.formattedAddress || place.displayName,
+    try {
+      const place = e.place
+      await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] })
+      selectedPlace = {
+        lat: place.location.lat(),
+        lng: place.location.lng(),
+        indirizzo: place.formattedAddress || place.displayName,
+      }
+    } catch (err) {
+      console.error('Errore fetchFields:', err)
+    }
+  })
+
+  // Fallback: cattura anche via evento change sul Place legacy
+  placeAutocomplete.addEventListener('gmp-select', async (e) => {
+    try {
+      const place = e.place
+      await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] })
+      selectedPlace = {
+        lat: place.location.lat(),
+        lng: place.location.lng(),
+        indirizzo: place.formattedAddress || place.displayName,
+      }
+    } catch (err) {
+      console.error('Errore gmp-select:', err)
     }
   })
 
@@ -116,10 +135,34 @@ function centraSuLocale(locale) {
   }
 }
 
-// Legge le coordinate dal risultato dell'autocomplete
-function getCoordinateDaAutocomplete() {
-  if (!selectedPlace) return null
-  const result = selectedPlace
-  selectedPlace = null
-  return result
+// Legge le coordinate dal risultato dell'autocomplete o geocoding
+async function getCoordinateDaAutocomplete() {
+  if (selectedPlace) {
+    const result = selectedPlace
+    selectedPlace = null
+    return result
+  }
+
+  // Fallback: geocodifica il testo scritto dall'utente
+  const placeInput = document.getElementById('place-autocomplete')
+  const testo = placeInput?.value || placeInput?.innerText || ''
+  if (!testo.trim()) return null
+
+  const { Geocoder } = await google.maps.importLibrary('geocoding')
+  const geocoder = new Geocoder()
+
+  try {
+    const { results } = await geocoder.geocode({ address: testo, region: 'it' })
+    if (results && results.length > 0) {
+      return {
+        lat: results[0].geometry.location.lat(),
+        lng: results[0].geometry.location.lng(),
+        indirizzo: results[0].formatted_address,
+      }
+    }
+  } catch (err) {
+    console.error('Errore geocoding:', err)
+  }
+
+  return null
 }

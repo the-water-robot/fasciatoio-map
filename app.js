@@ -77,14 +77,18 @@ async function salvaLocale() {
     return
   }
 
-  const coordinate = getCoordinateDaAutocomplete()
+  errore.classList.add('nascosto')
+  document.getElementById('btn-salva').disabled = true
+  document.getElementById('btn-salva').textContent = 'Ricerca indirizzo...'
+
+  const coordinate = await getCoordinateDaAutocomplete()
   if (!coordinate) {
-    mostraErrore('Seleziona un indirizzo dalla lista dei suggerimenti')
+    mostraErrore('Inserisci un indirizzo valido')
+    document.getElementById('btn-salva').disabled = false
+    document.getElementById('btn-salva').textContent = 'Salva'
     return
   }
 
-  errore.classList.add('nascosto')
-  document.getElementById('btn-salva').disabled = true
   document.getElementById('btn-salva').textContent = 'Salvataggio...'
 
   try {
