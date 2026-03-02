@@ -4,3 +4,5 @@ API-key
 .env*
 .claude/
 github-key
+supabase-keys
+.vercel
