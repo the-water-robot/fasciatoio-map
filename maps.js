@@ -110,12 +110,19 @@ function aggiungiMarker(locale) {
     gmpClickable: true,
   })
 
+  let distanzaHtml = ''
+  if (posizioneUtente) {
+    const km = calcolaDistanzaKm(posizioneUtente.lat, posizioneUtente.lng, locale.lat, locale.lng)
+    distanzaHtml = `<p style="margin-top:6px; font-size:0.8rem; color:#00897B; font-weight:bold">${km < 1 ? (km * 1000).toFixed(0) + ' m' : km.toFixed(1) + ' km'} da te</p>`
+  }
+
   const contenutoPopup = `
     <div style="max-width: 200px">
       <strong>${locale.nome}</strong><br/>
       <span style="color:#888; font-size:0.85rem">${locale.indirizzo || ''}</span>
       ${locale.note ? `<p style="margin-top:6px; font-size:0.85rem">${locale.note}</p>` : ''}
       ${locale.accessibile ? `<span style="color:#00897B; font-size:0.8rem">♿ Accessibile</span>` : ''}
+      ${distanzaHtml}
     </div>
   `
 
