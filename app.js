@@ -52,7 +52,9 @@ function tempoAPiedi(km) {
   const min = Math.round(km / 5 * 60)
   if (min < 1) return '< 1 min'
   if (min < 60) return `${min} min`
-  return null
+  const h = Math.floor(min / 60)
+  const m = min % 60
+  return m > 0 ? `${h}h ${m}min` : `${h}h`
 }
 
 // Crea una card HTML per un locale nella sidebar

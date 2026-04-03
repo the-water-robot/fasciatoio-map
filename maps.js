@@ -121,7 +121,10 @@ function buildPopup(locale) {
     const km = calcolaDistanzaKm(posizioneUtente.lat, posizioneUtente.lng, locale.lat, locale.lng)
     const kmStr = km < 1 ? `${(km * 1000).toFixed(0)} m` : `${km.toFixed(1)} km`
     const min = Math.round(km / 5 * 60)
-    const piediStr = min < 60 ? ` · 🚶 ${min < 1 ? '< 1' : min} min` : ''
+    let piediStr
+    if (min < 1) piediStr = ' · 🚶 < 1 min'
+    else if (min < 60) piediStr = ` · 🚶 ${min} min`
+    else { const h = Math.floor(min/60), m = min%60; piediStr = ` · 🚶 ${h}h${m>0?' '+m+'min':''}` }
     distanzaHtml = `<p style="margin-top:6px;font-size:0.8rem;color:#555"><strong style="color:${c}">${kmStr}</strong>${piediStr} da te</p>`
   }
 
