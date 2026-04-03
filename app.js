@@ -1,85 +1,120 @@
 // app.js — logica principale dell'applicazione
 
+let tuttiLocali = []
+
 // Chiamata da maps.js dopo che la mappa è pronta
 async function initApp() {
   await caricaERenderLocali()
   collegaEventiUI()
 }
 
-// Carica i locali da Supabase e li mostra su mappa e lista
+// Carica i locali da Supabase, aggiunge i marker e renderizza la lista
 async function caricaERenderLocali() {
-  const locali = await caricaLocali()
-  const lista = document.getElementById('lista-locali')
-  lista.innerHTML = ''
+  tuttiLocali = await caricaLocali()
+  tuttiLocali.forEach(aggiungiMarker)
+  renderLista()
+}
 
-  locali.forEach((locale) => {
-    aggiungiMarker(locale)
-    lista.appendChild(creaCardLocale(locale))
-  })
+// Renderizza la lista ordinata per distanza (se disponibile)
+function renderLista() {
+  const sorted = [...tuttiLocali]
+
+  if (posizioneUtente) {
+    sorted.sort((a, b) => {
+      const da = calcolaDistanzaKm(posizioneUtente.lat, posizioneUtente.lng, a.lat, a.lng)
+      const db = calcolaDistanzaKm(posizioneUtente.lat, posizioneUtente.lng, b.lat, b.lng)
+      return da - db
+    })
+  }
+
+  const lista = document.getElementById('lista-locali')
+  lista.innerHTML = `
+    <div class="lista-header">
+      <span>${sorted.length} posti</span>
+      ${posizioneUtente ? '<span class="lista-sort">📍 dal più vicino</span>' : ''}
+    </div>
+  `
+  sorted.forEach(locale => lista.appendChild(creaCardLocale(locale)))
+}
+
+// Richiamata da maps.js quando la geolocalizzazione è disponibile
+function riordinaLista() {
+  renderLista()
+}
+
+// Colore associato al livello
+function colorePerLivello(livello) {
+  return { Eccellente: '#43A047', Buono: '#FFB300', Sufficiente: '#FB8C00', Scarso: '#E53935' }[livello] || '#00897B'
+}
+
+// Tempo di cammino stimato (5 km/h)
+function tempoAPiedi(km) {
+  const min = Math.round(km / 5 * 60)
+  if (min < 1) return '< 1 min'
+  if (min < 60) return `${min} min`
+  return null
 }
 
 // Crea una card HTML per un locale nella sidebar
 function creaCardLocale(locale) {
+  const colore = colorePerLivello(locale.livello)
+
   let distanzaHtml = ''
   if (posizioneUtente) {
     const km = calcolaDistanzaKm(posizioneUtente.lat, posizioneUtente.lng, locale.lat, locale.lng)
-    distanzaHtml = `<span class="badge-distanza">${km < 1 ? (km * 1000).toFixed(0) + ' m' : km.toFixed(1) + ' km'}</span>`
+    const kmStr = km < 1 ? `${(km * 1000).toFixed(0)} m` : `${km.toFixed(1)} km`
+    const piedi = tempoAPiedi(km)
+    distanzaHtml = `
+      <div class="card-distanza">
+        <span class="dist-km">${kmStr}</span>
+        ${piedi ? `<span class="dist-piedi">🚶 ${piedi}</span>` : ''}
+      </div>`
   }
 
-  const livelloClass = locale.livello ? `badge-livello badge-${locale.livello.toLowerCase()}` : ''
   const dotazioniHtml = locale.dotazioni?.length
-    ? `<p class="dotazioni">${locale.dotazioni.join(' · ')}</p>`
+    ? `<div class="dotazioni">${locale.dotazioni.map(d => `<span class="dot-chip">${d}</span>`).join('')}</div>`
     : ''
 
   const card = document.createElement('div')
   card.className = 'locale-card'
+  card.style.borderLeftColor = colore
+
   card.innerHTML = `
-    <div class="card-header">
-      <h3>${locale.nome}</h3>
+    <div class="card-top">
+      <div class="card-info">
+        <h3>${locale.nome}</h3>
+        <p class="indirizzo">${locale.indirizzo || 'Indirizzo non specificato'}</p>
+      </div>
       ${distanzaHtml}
     </div>
-    <p class="indirizzo">${locale.indirizzo || 'Indirizzo non specificato'}</p>
     <div class="card-badges">
       ${locale.tipo ? `<span class="badge-tipo">${locale.tipo}</span>` : ''}
-      ${locale.livello ? `<span class="${livelloClass}">${locale.livello}</span>` : ''}
+      ${locale.livello ? `<span class="badge-livello" style="background:${colore}20;color:${colore}">${locale.livello}</span>` : ''}
     </div>
     ${dotazioniHtml}
-    ${locale.note ? `<p>${locale.note}</p>` : ''}
-    ${locale.accessibile ? `<span class="badge-accessibile">♿ Accessibile</span>` : ''}
+    ${locale.note ? `<p class="card-note">${locale.note}</p>` : ''}
   `
-  card.addEventListener('click', () => centraSuLocale(locale))
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.locale-card.attiva').forEach(c => c.classList.remove('attiva'))
+    card.classList.add('attiva')
+    centraSuLocale(locale)
+  })
   return card
 }
 
 // Collega tutti gli eventi ai bottoni del form
 function collegaEventiUI() {
-  const btnAggiungi = document.getElementById('btn-aggiungi')
-  const btnAnnulla = document.getElementById('btn-annulla')
-  const btnSalva = document.getElementById('btn-salva')
-  const formAggiungi = document.getElementById('form-aggiungi')
-
-  // Toggle sidebar (mobile)
   const btnToggle = document.getElementById('btn-toggle-sidebar')
   const sidebar = document.getElementById('sidebar')
-  btnToggle.addEventListener('click', () => {
-    sidebar.classList.toggle('aperto')
+  btnToggle.addEventListener('click', () => sidebar.classList.toggle('aperto'))
+
+  document.getElementById('btn-aggiungi').addEventListener('click', () => {
+    document.getElementById('form-aggiungi').classList.remove('nascosto')
+    document.getElementById('btn-aggiungi').classList.add('nascosto')
   })
 
-  // Mostra il form
-  btnAggiungi.addEventListener('click', () => {
-    formAggiungi.classList.remove('nascosto')
-    btnAggiungi.classList.add('nascosto')
-  })
-
-  // Nasconde il form e lo resetta
-  btnAnnulla.addEventListener('click', () => {
-    resetForm()
-  })
-
-  // Salva il locale
-  btnSalva.addEventListener('click', async () => {
-    await salvaLocale()
-  })
+  document.getElementById('btn-annulla').addEventListener('click', resetForm)
+  document.getElementById('btn-salva').addEventListener('click', salvaLocale)
 }
 
 // Salva un nuovo locale
@@ -90,64 +125,48 @@ async function salvaLocale() {
   const dotazioni = [...document.querySelectorAll('input[name="dotazione"]:checked')].map(el => el.value)
   const note = document.getElementById('input-note').value.trim()
   const aggiunto_da = document.getElementById('input-nickname').value.trim() || 'Anonimo'
-  const errore = document.getElementById('form-errore')
 
-  // Validazione
   if (!nome) { mostraErrore('Il nome del locale è obbligatorio'); return }
   if (!tipo) { mostraErrore('Seleziona la tipologia'); return }
   if (!livello) { mostraErrore('Seleziona il livello di pulizia'); return }
   if (!dotazioni.length) { mostraErrore('Seleziona almeno una dotazione'); return }
 
-  errore.classList.add('nascosto')
-  document.getElementById('btn-salva').disabled = true
-  document.getElementById('btn-salva').textContent = 'Ricerca indirizzo...'
+  document.getElementById('form-errore').classList.add('nascosto')
+  const btnSalva = document.getElementById('btn-salva')
+  btnSalva.disabled = true
+  btnSalva.textContent = 'Ricerca indirizzo...'
 
   const coordinate = await getCoordinateDaAutocomplete()
   if (!coordinate) {
     mostraErrore('Inserisci un indirizzo valido')
-    document.getElementById('btn-salva').disabled = false
-    document.getElementById('btn-salva').textContent = 'Salva'
+    btnSalva.disabled = false
+    btnSalva.textContent = 'Salva'
     return
   }
 
-  document.getElementById('btn-salva').textContent = 'Salvataggio...'
+  btnSalva.textContent = 'Salvataggio...'
 
   try {
-    const nuovoLocale = await aggiungiLocale({
-      nome,
-      indirizzo: coordinate.indirizzo,
-      lat: coordinate.lat,
-      lng: coordinate.lng,
-      tipo,
-      dotazioni,
-      livello,
-      note,
-      aggiunto_da,
-    })
-
-    // Aggiunge subito il marker e la card senza ricaricare tutto
+    const nuovoLocale = await aggiungiLocale({ nome, indirizzo: coordinate.indirizzo, lat: coordinate.lat, lng: coordinate.lng, tipo, dotazioni, livello, note, aggiunto_da })
+    tuttiLocali.unshift(nuovoLocale)
     aggiungiMarker(nuovoLocale)
-    const lista = document.getElementById('lista-locali')
-    lista.insertBefore(creaCardLocale(nuovoLocale), lista.firstChild)
+    renderLista()
     centraSuLocale(nuovoLocale)
-
     resetForm()
-  } catch (err) {
+  } catch {
     mostraErrore('Errore nel salvataggio. Riprova.')
   } finally {
-    document.getElementById('btn-salva').disabled = false
-    document.getElementById('btn-salva').textContent = 'Salva'
+    btnSalva.disabled = false
+    btnSalva.textContent = 'Salva'
   }
 }
 
-// Mostra un messaggio di errore nel form
 function mostraErrore(messaggio) {
   const errore = document.getElementById('form-errore')
   errore.textContent = messaggio
   errore.classList.remove('nascosto')
 }
 
-// Resetta e nasconde il form
 function resetForm() {
   document.getElementById('input-nome').value = ''
   const placeInput = document.getElementById('place-autocomplete')
