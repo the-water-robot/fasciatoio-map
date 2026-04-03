@@ -116,10 +116,16 @@ function aggiungiMarker(locale) {
     distanzaHtml = `<p style="margin-top:6px; font-size:0.8rem; color:#00897B; font-weight:bold">${km < 1 ? (km * 1000).toFixed(0) + ' m' : km.toFixed(1) + ' km'} da te</p>`
   }
 
+  const dotazioniPopup = locale.dotazioni?.length
+    ? `<p style="margin-top:5px; font-size:0.78rem; color:#555">${locale.dotazioni.join(' · ')}</p>`
+    : ''
+
   const contenutoPopup = `
-    <div style="max-width: 200px">
+    <div style="max-width: 220px">
       <strong>${locale.nome}</strong><br/>
       <span style="color:#888; font-size:0.85rem">${locale.indirizzo || ''}</span>
+      ${locale.tipo || locale.livello ? `<p style="margin-top:4px; font-size:0.8rem; color:#555">${[locale.tipo, locale.livello].filter(Boolean).join(' · ')}</p>` : ''}
+      ${dotazioniPopup}
       ${locale.note ? `<p style="margin-top:6px; font-size:0.85rem">${locale.note}</p>` : ''}
       ${locale.accessibile ? `<span style="color:#00897B; font-size:0.8rem">♿ Accessibile</span>` : ''}
       ${distanzaHtml}

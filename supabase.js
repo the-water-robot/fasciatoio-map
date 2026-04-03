@@ -22,10 +22,10 @@ async function caricaLocali() {
 }
 
 // Inserisce un nuovo locale nel database
-async function aggiungiLocale({ nome, indirizzo, lat, lng, note, accessibile, aggiunto_da }) {
+async function aggiungiLocale({ nome, indirizzo, lat, lng, tipo, dotazioni, livello, note, accessibile, aggiunto_da }) {
   const { data, error } = await supabaseClient
     .from('locali')
-    .insert([{ nome, indirizzo, lat, lng, note, accessibile, aggiunto_da }])
+    .insert([{ nome, indirizzo, lat, lng, tipo, dotazioni, livello, note, accessibile, aggiunto_da }])
     .select()
 
   if (error) {

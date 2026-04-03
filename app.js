@@ -26,6 +26,11 @@ function creaCardLocale(locale) {
     distanzaHtml = `<span class="badge-distanza">${km < 1 ? (km * 1000).toFixed(0) + ' m' : km.toFixed(1) + ' km'}</span>`
   }
 
+  const livelloClass = locale.livello ? `badge-livello badge-${locale.livello.toLowerCase()}` : ''
+  const dotazioniHtml = locale.dotazioni?.length
+    ? `<p class="dotazioni">${locale.dotazioni.join(' · ')}</p>`
+    : ''
+
   const card = document.createElement('div')
   card.className = 'locale-card'
   card.innerHTML = `
@@ -33,7 +38,12 @@ function creaCardLocale(locale) {
       <h3>${locale.nome}</h3>
       ${distanzaHtml}
     </div>
-    <p>${locale.indirizzo || 'Indirizzo non specificato'}</p>
+    <p class="indirizzo">${locale.indirizzo || 'Indirizzo non specificato'}</p>
+    <div class="card-badges">
+      ${locale.tipo ? `<span class="badge-tipo">${locale.tipo}</span>` : ''}
+      ${locale.livello ? `<span class="${livelloClass}">${locale.livello}</span>` : ''}
+    </div>
+    ${dotazioniHtml}
     ${locale.note ? `<p>${locale.note}</p>` : ''}
     ${locale.accessibile ? `<span class="badge-accessibile">♿ Accessibile</span>` : ''}
   `
