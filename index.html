@@ -92,10 +92,18 @@
     </div>
 
     <div id="filtri">
-      <div class="filtri-header">
-        <span class="filtri-label">Filtra</span>
-        <button id="btn-reset-filtri" class="btn-reset-filtri nascosto">✕ Azzera</button>
+      <div class="filtri-header" id="filtri-toggle" role="button" aria-expanded="false">
+        <div class="filtri-header-left">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+          <span class="filtri-label">Filtri</span>
+          <span id="filtri-badge" class="filtri-badge nascosto">0</span>
+        </div>
+        <div class="filtri-header-right">
+          <button id="btn-reset-filtri" class="btn-reset-filtri nascosto" tabindex="-1">✕ Azzera</button>
+          <svg class="filtri-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
       </div>
+      <div id="filtri-body" class="filtri-body">
       <div class="filtri-row">
         <button class="chip-filtro chip-livello attivo" data-key="livello" data-valore="">Tutti</button>
         <button class="chip-filtro chip-livello" data-key="livello" data-valore="Eccellente" data-colore="#43A047">🟢 Eccellente</button>
@@ -118,6 +126,7 @@
         <button class="chip-filtro" data-key="dotazione" data-valore="Pannolini">🩲 Pannolini</button>
         <button class="chip-filtro" data-key="dotazione" data-valore="Salviette">🧻 Salviette</button>
       </div>
+      </div><!-- /filtri-body -->
     </div>
 
     <div id="lista-locali"></div>

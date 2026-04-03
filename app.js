@@ -129,24 +129,31 @@ function tipoIcon(tipo) {
 // ── Filtri ───────────────────────────────────────────────────────────────────
 
 function collegaFiltri() {
+  // Toggle collassa/espandi
+  document.getElementById('filtri-toggle')?.addEventListener('click', (e) => {
+    if (e.target.closest('#btn-reset-filtri')) return
+    const body = document.getElementById('filtri-body')
+    const toggle = document.getElementById('filtri-toggle')
+    const aperto = body.classList.toggle('aperto')
+    toggle.setAttribute('aria-expanded', aperto)
+  })
+
   document.querySelectorAll('.chip-filtro').forEach(chip => {
     chip.addEventListener('click', () => {
       const key = chip.dataset.key
       const val = chip.dataset.valore
-
-      // Toggle: se già attivo, deseleziona
       filtriAttivi[key] = filtriAttivi[key] === val ? null : val
-
       aggiornaCSSFiltri(key)
-      aggiornaResetBtn()
+      aggiornaBadge()
       renderLista()
     })
   })
 
-  document.getElementById('btn-reset-filtri')?.addEventListener('click', () => {
+  document.getElementById('btn-reset-filtri')?.addEventListener('click', (e) => {
+    e.stopPropagation()
     filtriAttivi = { livello: null, tipo: null, dotazione: null }
     ;['livello', 'tipo', 'dotazione'].forEach(aggiornaCSSFiltri)
-    aggiornaResetBtn()
+    aggiornaBadge()
     renderLista()
   })
 }
@@ -155,7 +162,6 @@ function aggiornaCSSFiltri(key) {
   document.querySelectorAll(`.chip-filtro[data-key="${key}"]`).forEach(c => {
     const isAttivo = c.dataset.valore === (filtriAttivi[key] ?? '')
     c.classList.toggle('attivo', isAttivo)
-    // colore personalizzato per livello
     if (c.dataset.colore && isAttivo) {
       c.style.background = c.dataset.colore
       c.style.borderColor = c.dataset.colore
@@ -168,9 +174,15 @@ function aggiornaCSSFiltri(key) {
   })
 }
 
-function aggiornaResetBtn() {
-  const hasFilter = Object.values(filtriAttivi).some(Boolean)
-  document.getElementById('btn-reset-filtri')?.classList.toggle('nascosto', !hasFilter)
+function aggiornaBadge() {
+  const count = Object.values(filtriAttivi).filter(Boolean).length
+  const badge = document.getElementById('filtri-badge')
+  const resetBtn = document.getElementById('btn-reset-filtri')
+  if (badge) {
+    badge.textContent = count
+    badge.classList.toggle('nascosto', count === 0)
+  }
+  resetBtn?.classList.toggle('nascosto', count === 0)
 }
 
 // ── Form / UI ────────────────────────────────────────────────────────────────

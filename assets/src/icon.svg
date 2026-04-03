@@ -1,19 +1,19 @@
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<svg width="400" height="500" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#00897B"/>
       <stop offset="100%" stop-color="#00ACC1"/>
     </linearGradient>
-    <clipPath id="circle">
-      <circle cx="256" cy="256" r="256"/>
-    </clipPath>
   </defs>
-  <!-- sfondo gradiente -->
-  <circle cx="256" cy="256" r="256" fill="url(#bg)"/>
+  <!-- corpo pin a goccia -->
+  <path d="M200 12 C100 12 18 94 18 194 C18 308 200 486 200 486 C200 486 382 308 382 194 C382 94 300 12 200 12Z"
+        fill="url(#bg)" stroke="none"/>
+  <!-- alone interno chiaro -->
+  <circle cx="200" cy="185" r="142" fill="rgba(255,255,255,0.10)"/>
   <!-- testa del bimbo -->
-  <circle cx="256" cy="175" r="82" fill="white"/>
-  <!-- corpo/fasciatoio -->
-  <rect x="88" y="285" width="336" height="74" rx="37" fill="white"/>
+  <circle cx="200" cy="148" r="68" fill="white"/>
+  <!-- corpo disteso sul fasciatoio -->
+  <rect x="78" y="236" width="244" height="56" rx="28" fill="white"/>
   <!-- piano fasciatoio -->
-  <rect x="56" y="355" width="400" height="30" rx="15" fill="rgba(255,255,255,0.45)"/>
+  <rect x="54" y="287" width="292" height="22" rx="11" fill="rgba(255,255,255,0.42)"/>
 </svg>
