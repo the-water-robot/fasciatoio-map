@@ -35,13 +35,45 @@
         <input type="text" id="input-indirizzo" placeholder="Inizia a scrivere..." />
       </label>
 
-      <label>Note
-        <textarea id="input-note" placeholder="Es. Fasciatoio nel bagno donne, al piano -1..."></textarea>
+      <label>Tipologia *
+        <select id="input-tipo">
+          <option value="">— scegli —</option>
+          <option>Bar</option>
+          <option>Ristorante</option>
+          <option>Negozio</option>
+          <option>Centro commerciale</option>
+          <option>Altro</option>
+        </select>
       </label>
 
-      <label class="checkbox">
-        <input type="checkbox" id="input-accessibile" />
-        Accessibile ai disabili
+      <fieldset class="fieldset-livello">
+        <legend>Livello di pulizia *</legend>
+        <label class="radio-livello eccellente">
+          <input type="radio" name="livello" value="Eccellente" /> 🟢 Eccellente
+        </label>
+        <label class="radio-livello buono">
+          <input type="radio" name="livello" value="Buono" /> 🟡 Buono
+        </label>
+        <label class="radio-livello sufficiente">
+          <input type="radio" name="livello" value="Sufficiente" /> 🟠 Sufficiente
+        </label>
+        <label class="radio-livello scarso">
+          <input type="radio" name="livello" value="Scarso" /> 🔴 Scarso
+        </label>
+      </fieldset>
+
+      <fieldset class="fieldset-dotazioni">
+        <legend>Dotazioni disponibili *</legend>
+        <label class="checkbox"><input type="checkbox" name="dotazione" value="Fasciatoio" /> Fasciatoio</label>
+        <label class="checkbox"><input type="checkbox" name="dotazione" value="Lavandino" /> Lavandino</label>
+        <label class="checkbox"><input type="checkbox" name="dotazione" value="Salviette" /> Salviette</label>
+        <label class="checkbox"><input type="checkbox" name="dotazione" value="Scaldabiberon" /> Scaldabiberon</label>
+        <label class="checkbox"><input type="checkbox" name="dotazione" value="Pannolini" /> Pannolini</label>
+        <label class="checkbox"><input type="checkbox" name="dotazione" value="Poltrona allattamento" /> Poltrona allattamento</label>
+      </fieldset>
+
+      <label>Note
+        <textarea id="input-note" placeholder="Es. Fasciatoio nel bagno donne, al piano -1..."></textarea>
       </label>
 
       <label>Il tuo nickname

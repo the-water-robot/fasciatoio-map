@@ -124,7 +124,12 @@ function aggiungiMarker(locale) {
     <div style="max-width: 220px">
       <strong>${locale.nome}</strong><br/>
       <span style="color:#888; font-size:0.85rem">${locale.indirizzo || ''}</span>
-      ${locale.tipo || locale.livello ? `<p style="margin-top:4px; font-size:0.8rem; color:#555">${[locale.tipo, locale.livello].filter(Boolean).join(' · ')}</p>` : ''}
+      ${locale.tipo ? `<span style="font-size:0.75rem;background:#f0f0f0;color:#555;padding:2px 7px;border-radius:10px;margin-top:4px;display:inline-block">${locale.tipo}</span>` : ''}
+      ${locale.livello ? (() => {
+        const colori = { Eccellente: '#2E7D32:#E8F5E9', Buono: '#F57F17:#FFFDE7', Sufficiente: '#E65100:#FFF3E0', Scarso: '#C62828:#FFEBEE' }
+        const [fg, bg] = (colori[locale.livello] || '#555:#f0f0f0').split(':')
+        return `<span style="font-size:0.75rem;background:${bg};color:${fg};padding:2px 7px;border-radius:10px;margin-top:4px;margin-left:4px;display:inline-block;font-weight:600">${locale.livello}</span>`
+      })() : ''}
       ${dotazioniPopup}
       ${locale.note ? `<p style="margin-top:6px; font-size:0.85rem">${locale.note}</p>` : ''}
       ${locale.accessibile ? `<span style="color:#00897B; font-size:0.8rem">♿ Accessibile</span>` : ''}

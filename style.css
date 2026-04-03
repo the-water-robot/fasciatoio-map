@@ -193,6 +193,102 @@ textarea {
   margin-top: 6px;
 }
 
+/* ── Badge tipo ── */
+.badge-tipo {
+  display: inline-block;
+  background: #f0f0f0;
+  color: #555;
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+/* ── Badge livello ── */
+.badge-livello {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.badge-eccellente { background: #E8F5E9; color: #2E7D32; }
+.badge-buono      { background: #FFFDE7; color: #F57F17; }
+.badge-sufficiente{ background: #FFF3E0; color: #E65100; }
+.badge-scarso     { background: #FFEBEE; color: #C62828; }
+
+.card-badges {
+  display: flex;
+  gap: 6px;
+  margin: 4px 0;
+  flex-wrap: wrap;
+}
+
+.dotazioni {
+  font-size: 0.75rem !important;
+  color: #777 !important;
+  margin-top: 3px !important;
+}
+
+.indirizzo {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+/* ── Fieldset form ── */
+fieldset {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+fieldset legend {
+  font-size: 0.85rem;
+  color: #555;
+  padding: 0 4px;
+}
+
+select {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  width: 100%;
+  background: white;
+}
+
+select:focus {
+  outline: none;
+  border-color: #00897B;
+}
+
+.fieldset-dotazioni {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 8px;
+}
+
+.fieldset-dotazioni legend {
+  grid-column: 1 / -1;
+}
+
+.fieldset-livello {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.radio-livello {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: #333;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
 /* ── Mappa ── */
 #map {
   flex: 1;

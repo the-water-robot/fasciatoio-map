@@ -85,16 +85,18 @@ function collegaEventiUI() {
 // Salva un nuovo locale
 async function salvaLocale() {
   const nome = document.getElementById('input-nome').value.trim()
+  const tipo = document.getElementById('input-tipo').value
+  const livello = document.querySelector('input[name="livello"]:checked')?.value || ''
+  const dotazioni = [...document.querySelectorAll('input[name="dotazione"]:checked')].map(el => el.value)
   const note = document.getElementById('input-note').value.trim()
-  const accessibile = document.getElementById('input-accessibile').checked
   const aggiunto_da = document.getElementById('input-nickname').value.trim() || 'Anonimo'
   const errore = document.getElementById('form-errore')
 
   // Validazione
-  if (!nome) {
-    mostraErrore('Il nome del locale è obbligatorio')
-    return
-  }
+  if (!nome) { mostraErrore('Il nome del locale è obbligatorio'); return }
+  if (!tipo) { mostraErrore('Seleziona la tipologia'); return }
+  if (!livello) { mostraErrore('Seleziona il livello di pulizia'); return }
+  if (!dotazioni.length) { mostraErrore('Seleziona almeno una dotazione'); return }
 
   errore.classList.add('nascosto')
   document.getElementById('btn-salva').disabled = true
@@ -116,8 +118,10 @@ async function salvaLocale() {
       indirizzo: coordinate.indirizzo,
       lat: coordinate.lat,
       lng: coordinate.lng,
+      tipo,
+      dotazioni,
+      livello,
       note,
-      accessibile,
       aggiunto_da,
     })
 
@@ -148,8 +152,10 @@ function resetForm() {
   document.getElementById('input-nome').value = ''
   const placeInput = document.getElementById('place-autocomplete')
   if (placeInput) placeInput.value = ''
+  document.getElementById('input-tipo').value = ''
+  document.querySelectorAll('input[name="livello"]').forEach(r => r.checked = false)
+  document.querySelectorAll('input[name="dotazione"]').forEach(c => c.checked = false)
   document.getElementById('input-note').value = ''
-  document.getElementById('input-accessibile').checked = false
   document.getElementById('input-nickname').value = ''
   document.getElementById('form-errore').classList.add('nascosto')
   document.getElementById('form-aggiungi').classList.add('nascosto')
