@@ -208,18 +208,53 @@ fieldset legend {
 
 /* ── Filtri ── */
 #filtri {
-  margin-top: 6px;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 5;
+  padding: 8px 0 6px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 2px;
 }
+
+.filtri-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.filtri-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #bbb;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.btn-reset-filtri {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #00897B;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+
+.btn-reset-filtri:hover { background: #e0f2f1; }
 
 .filtri-row {
   display: flex;
   gap: 5px;
   overflow-x: auto;
   scrollbar-width: none;
-  padding-bottom: 2px;
+  padding-bottom: 1px;
 }
 
 .filtri-row::-webkit-scrollbar { display: none; }
@@ -228,20 +263,22 @@ fieldset legend {
   flex-shrink: 0;
   border: 1.5px solid #e8e8e8;
   background: white;
-  color: #666;
-  font-size: 0.72rem;
+  color: #777;
+  font-size: 0.71rem;
   font-weight: 600;
-  padding: 4px 10px;
+  padding: 4px 11px;
   border-radius: 20px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.18s;
   font-family: inherit;
   white-space: nowrap;
+  line-height: 1.4;
 }
 
-.chip-filtro:hover {
+.chip-filtro:hover:not(.attivo) {
   border-color: #00897B;
   color: #00897B;
+  background: #f0faf9;
 }
 
 .chip-filtro.attivo {
@@ -389,25 +426,30 @@ fieldset legend {
   font-style: italic;
 }
 
+.card-footer {
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid #f5f5f5;
+}
+
 .btn-open-maps {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  margin-top: 8px;
-  padding: 5px 11px;
-  background: #f0faf9;
-  color: #00897B;
-  border: 1.5px solid #b2dfdb;
+  padding: 6px 13px;
+  background: linear-gradient(135deg, #00897B, #00ACC1);
+  color: white;
   border-radius: 20px;
   font-size: 0.72rem;
   font-weight: 700;
   text-decoration: none;
-  transition: background 0.15s, border-color 0.15s;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.2px;
 }
 
 .btn-open-maps:hover {
-  background: #e0f2f1;
-  border-color: #00897B;
+  opacity: 0.88;
+  transform: translateY(-1px);
 }
 
 .filtro-attivo-label {

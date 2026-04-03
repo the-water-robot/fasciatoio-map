@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FasciatoioMap</title>
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
   <link rel="apple-touch-icon" href="assets/logo-48.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -91,12 +92,16 @@
     </div>
 
     <div id="filtri">
+      <div class="filtri-header">
+        <span class="filtri-label">Filtra</span>
+        <button id="btn-reset-filtri" class="btn-reset-filtri nascosto">✕ Azzera</button>
+      </div>
       <div class="filtri-row">
-        <button class="chip-filtro attivo" data-key="livello" data-valore="">Tutti</button>
-        <button class="chip-filtro" data-key="livello" data-valore="Eccellente">🟢 Eccellente</button>
-        <button class="chip-filtro" data-key="livello" data-valore="Buono">🟡 Buono</button>
-        <button class="chip-filtro" data-key="livello" data-valore="Sufficiente">🟠 Sufficiente</button>
-        <button class="chip-filtro" data-key="livello" data-valore="Scarso">🔴 Scarso</button>
+        <button class="chip-filtro chip-livello attivo" data-key="livello" data-valore="">Tutti</button>
+        <button class="chip-filtro chip-livello" data-key="livello" data-valore="Eccellente" data-colore="#43A047">🟢 Eccellente</button>
+        <button class="chip-filtro chip-livello" data-key="livello" data-valore="Buono" data-colore="#FFB300">🟡 Buono</button>
+        <button class="chip-filtro chip-livello" data-key="livello" data-valore="Sufficiente" data-colore="#FB8C00">🟠 Sufficiente</button>
+        <button class="chip-filtro chip-livello" data-key="livello" data-valore="Scarso" data-colore="#E53935">🔴 Scarso</button>
       </div>
       <div class="filtri-row">
         <button class="chip-filtro attivo" data-key="tipo" data-valore="">Tutto</button>
@@ -107,9 +112,9 @@
         <button class="chip-filtro" data-key="tipo" data-valore="Altro">📍 Altro</button>
       </div>
       <div class="filtri-row">
-        <button class="chip-filtro attivo" data-key="dotazione" data-valore="">Dotazioni</button>
-        <button class="chip-filtro" data-key="dotazione" data-valore="Scaldabiberon">🍼 Scalda</button>
-        <button class="chip-filtro" data-key="dotazione" data-valore="Poltrona allattamento">🤱 Poltrona</button>
+        <button class="chip-filtro attivo" data-key="dotazione" data-valore="">Extra</button>
+        <button class="chip-filtro" data-key="dotazione" data-valore="Scaldabiberon">🍼 Scaldabiberon</button>
+        <button class="chip-filtro" data-key="dotazione" data-valore="Poltrona allattamento">🤱 Allattamento</button>
         <button class="chip-filtro" data-key="dotazione" data-valore="Pannolini">🩲 Pannolini</button>
         <button class="chip-filtro" data-key="dotazione" data-valore="Salviette">🧻 Salviette</button>
       </div>

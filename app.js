@@ -105,10 +105,12 @@ function creaCardLocale(locale) {
     </div>
     ${dotazioniHtml}
     ${locale.note ? `<p class="card-note">${locale.note}</p>` : ''}
-    <a class="btn-open-maps" href="${urlMaps(locale)}" target="_blank" rel="noopener">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-      Indicazioni
-    </a>
+    <div class="card-footer">
+      <a class="btn-open-maps" href="${urlMaps(locale)}" target="_blank" rel="noopener" title="Apri Google Maps con indicazioni a piedi">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        Indicazioni a piedi
+      </a>
+    </div>
   `
 
   card.addEventListener('click', e => {
@@ -132,16 +134,43 @@ function collegaFiltri() {
       const key = chip.dataset.key
       const val = chip.dataset.valore
 
+      // Toggle: se già attivo, deseleziona
       filtriAttivi[key] = filtriAttivi[key] === val ? null : val
 
-      // Aggiorna stato visivo
-      document.querySelectorAll(`.chip-filtro[data-key="${key}"]`).forEach(c => {
-        c.classList.toggle('attivo', c.dataset.valore === (filtriAttivi[key] ?? ''))
-      })
-
+      aggiornaCSSFiltri(key)
+      aggiornaResetBtn()
       renderLista()
     })
   })
+
+  document.getElementById('btn-reset-filtri')?.addEventListener('click', () => {
+    filtriAttivi = { livello: null, tipo: null, dotazione: null }
+    ;['livello', 'tipo', 'dotazione'].forEach(aggiornaCSSFiltri)
+    aggiornaResetBtn()
+    renderLista()
+  })
+}
+
+function aggiornaCSSFiltri(key) {
+  document.querySelectorAll(`.chip-filtro[data-key="${key}"]`).forEach(c => {
+    const isAttivo = c.dataset.valore === (filtriAttivi[key] ?? '')
+    c.classList.toggle('attivo', isAttivo)
+    // colore personalizzato per livello
+    if (c.dataset.colore && isAttivo) {
+      c.style.background = c.dataset.colore
+      c.style.borderColor = c.dataset.colore
+      c.style.color = 'white'
+    } else if (c.dataset.colore) {
+      c.style.background = ''
+      c.style.borderColor = ''
+      c.style.color = ''
+    }
+  })
+}
+
+function aggiornaResetBtn() {
+  const hasFilter = Object.values(filtriAttivi).some(Boolean)
+  document.getElementById('btn-reset-filtri')?.classList.toggle('nascosto', !hasFilter)
 }
 
 // ── Form / UI ────────────────────────────────────────────────────────────────

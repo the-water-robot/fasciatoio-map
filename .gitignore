@@ -1,4 +1,7 @@
 .DS_Store
+assets/backup-old/
+import-data.mjs
+import-retry.mjs
 API-key
 *.env
 .env*
