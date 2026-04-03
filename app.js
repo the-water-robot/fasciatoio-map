@@ -1,7 +1,7 @@
 // app.js — logica principale dell'applicazione
 
 let tuttiLocali = []
-let filtriAttivi = { livello: null, tipo: null, dotazione: null }
+let filtriAttivi = { livello: [], tipo: [], dotazione: [] }
 
 // ── Init ────────────────────────────────────────────────────────────────────
 
@@ -27,10 +27,10 @@ function riordinaLista() {
 function renderLista() {
   let lista = [...tuttiLocali]
 
-  // Applica filtri
-  if (filtriAttivi.livello)   lista = lista.filter(l => l.livello === filtriAttivi.livello)
-  if (filtriAttivi.tipo)      lista = lista.filter(l => l.tipo === filtriAttivi.tipo)
-  if (filtriAttivi.dotazione) lista = lista.filter(l => l.dotazioni?.includes(filtriAttivi.dotazione))
+  // Applica filtri (OR dentro ogni categoria)
+  if (filtriAttivi.livello.length)   lista = lista.filter(l => filtriAttivi.livello.includes(l.livello))
+  if (filtriAttivi.tipo.length)      lista = lista.filter(l => filtriAttivi.tipo.includes(l.tipo))
+  if (filtriAttivi.dotazione.length) lista = lista.filter(l => filtriAttivi.dotazione.every(d => l.dotazioni?.includes(d)))
 
   // Ordina per distanza
   if (posizioneUtente) {
@@ -41,7 +41,7 @@ function renderLista() {
   }
 
   const el = document.getElementById('lista-locali')
-  const filtroAttivo = Object.values(filtriAttivi).some(Boolean)
+  const filtroAttivo = Object.values(filtriAttivi).some(a => a.length)
   el.innerHTML = `
     <div class="lista-header">
       <span>${lista.length} posti${filtroAttivo ? ` <span class="filtro-attivo-label">· filtrati</span>` : ''}</span>
@@ -142,7 +142,13 @@ function collegaFiltri() {
     chip.addEventListener('click', () => {
       const key = chip.dataset.key
       const val = chip.dataset.valore
-      filtriAttivi[key] = filtriAttivi[key] === val ? null : val
+      if (val === '') {
+        filtriAttivi[key] = []
+      } else {
+        const idx = filtriAttivi[key].indexOf(val)
+        if (idx === -1) filtriAttivi[key].push(val)
+        else filtriAttivi[key].splice(idx, 1)
+      }
       aggiornaCSSFiltri(key)
       aggiornaBadge()
       renderLista()
@@ -151,7 +157,7 @@ function collegaFiltri() {
 
   document.getElementById('btn-reset-filtri')?.addEventListener('click', (e) => {
     e.stopPropagation()
-    filtriAttivi = { livello: null, tipo: null, dotazione: null }
+    filtriAttivi = { livello: [], tipo: [], dotazione: [] }
     ;['livello', 'tipo', 'dotazione'].forEach(aggiornaCSSFiltri)
     aggiornaBadge()
     renderLista()
@@ -159,8 +165,10 @@ function collegaFiltri() {
 }
 
 function aggiornaCSSFiltri(key) {
+  const attivi = filtriAttivi[key]
   document.querySelectorAll(`.chip-filtro[data-key="${key}"]`).forEach(c => {
-    const isAttivo = c.dataset.valore === (filtriAttivi[key] ?? '')
+    const val = c.dataset.valore
+    const isAttivo = val === '' ? attivi.length === 0 : attivi.includes(val)
     c.classList.toggle('attivo', isAttivo)
     if (c.dataset.colore && isAttivo) {
       c.style.background = c.dataset.colore
@@ -175,7 +183,7 @@ function aggiornaCSSFiltri(key) {
 }
 
 function aggiornaBadge() {
-  const count = Object.values(filtriAttivi).filter(Boolean).length
+  const count = Object.values(filtriAttivi).reduce((s, a) => s + a.length, 0)
   const badge = document.getElementById('filtri-badge')
   const resetBtn = document.getElementById('btn-reset-filtri')
   if (badge) {
