@@ -1,40 +1,20 @@
 // app.js — logica principale dell'applicazione
 
 let tuttiLocali = []
+let filtriAttivi = { livello: null, tipo: null, dotazione: null }
 
-// Chiamata da maps.js dopo che la mappa è pronta
+// ── Init ────────────────────────────────────────────────────────────────────
+
 async function initApp() {
   await caricaERenderLocali()
   collegaEventiUI()
+  collegaFiltri()
 }
 
-// Carica i locali da Supabase, aggiunge i marker e renderizza la lista
 async function caricaERenderLocali() {
   tuttiLocali = await caricaLocali()
   tuttiLocali.forEach(aggiungiMarker)
   renderLista()
-}
-
-// Renderizza la lista ordinata per distanza (se disponibile)
-function renderLista() {
-  const sorted = [...tuttiLocali]
-
-  if (posizioneUtente) {
-    sorted.sort((a, b) => {
-      const da = calcolaDistanzaKm(posizioneUtente.lat, posizioneUtente.lng, a.lat, a.lng)
-      const db = calcolaDistanzaKm(posizioneUtente.lat, posizioneUtente.lng, b.lat, b.lng)
-      return da - db
-    })
-  }
-
-  const lista = document.getElementById('lista-locali')
-  lista.innerHTML = `
-    <div class="lista-header">
-      <span>${sorted.length} posti</span>
-      ${posizioneUtente ? '<span class="lista-sort">📍 dal più vicino</span>' : ''}
-    </div>
-  `
-  sorted.forEach(locale => lista.appendChild(creaCardLocale(locale)))
 }
 
 // Richiamata da maps.js quando la geolocalizzazione è disponibile
@@ -42,22 +22,53 @@ function riordinaLista() {
   renderLista()
 }
 
-// Colore associato al livello
+// ── Render lista ─────────────────────────────────────────────────────────────
+
+function renderLista() {
+  let lista = [...tuttiLocali]
+
+  // Applica filtri
+  if (filtriAttivi.livello)   lista = lista.filter(l => l.livello === filtriAttivi.livello)
+  if (filtriAttivi.tipo)      lista = lista.filter(l => l.tipo === filtriAttivi.tipo)
+  if (filtriAttivi.dotazione) lista = lista.filter(l => l.dotazioni?.includes(filtriAttivi.dotazione))
+
+  // Ordina per distanza
+  if (posizioneUtente) {
+    lista.sort((a, b) =>
+      calcolaDistanzaKm(posizioneUtente.lat, posizioneUtente.lng, a.lat, a.lng) -
+      calcolaDistanzaKm(posizioneUtente.lat, posizioneUtente.lng, b.lat, b.lng)
+    )
+  }
+
+  const el = document.getElementById('lista-locali')
+  const filtroAttivo = Object.values(filtriAttivi).some(Boolean)
+  el.innerHTML = `
+    <div class="lista-header">
+      <span>${lista.length} posti${filtroAttivo ? ` <span class="filtro-attivo-label">· filtrati</span>` : ''}</span>
+      ${posizioneUtente ? '<span class="lista-sort">📍 dal più vicino</span>' : ''}
+    </div>
+  `
+  lista.forEach(locale => el.appendChild(creaCardLocale(locale)))
+}
+
+// ── Card ─────────────────────────────────────────────────────────────────────
+
 function colorePerLivello(livello) {
   return { Eccellente: '#43A047', Buono: '#FFB300', Sufficiente: '#FB8C00', Scarso: '#E53935' }[livello] || '#00897B'
 }
 
-// Tempo di cammino stimato (5 km/h)
 function tempoAPiedi(km) {
   const min = Math.round(km / 5 * 60)
   if (min < 1) return '< 1 min'
   if (min < 60) return `${min} min`
-  const h = Math.floor(min / 60)
-  const m = min % 60
+  const h = Math.floor(min / 60), m = min % 60
   return m > 0 ? `${h}h ${m}min` : `${h}h`
 }
 
-// Crea una card HTML per un locale nella sidebar
+function urlMaps(locale) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${locale.lat},${locale.lng}&travelmode=walking`
+}
+
 function creaCardLocale(locale) {
   const colore = colorePerLivello(locale.livello)
 
@@ -65,11 +76,10 @@ function creaCardLocale(locale) {
   if (posizioneUtente) {
     const km = calcolaDistanzaKm(posizioneUtente.lat, posizioneUtente.lng, locale.lat, locale.lng)
     const kmStr = km < 1 ? `${(km * 1000).toFixed(0)} m` : `${km.toFixed(1)} km`
-    const piedi = tempoAPiedi(km)
     distanzaHtml = `
       <div class="card-distanza">
         <span class="dist-km">${kmStr}</span>
-        ${piedi ? `<span class="dist-piedi">🚶 ${piedi}</span>` : ''}
+        <span class="dist-piedi">🚶 ${tempoAPiedi(km)}</span>
       </div>`
   }
 
@@ -90,13 +100,19 @@ function creaCardLocale(locale) {
       ${distanzaHtml}
     </div>
     <div class="card-badges">
-      ${locale.tipo ? `<span class="badge-tipo">${locale.tipo}</span>` : ''}
+      ${locale.tipo ? `<span class="badge-tipo">${tipoIcon(locale.tipo)} ${locale.tipo}</span>` : ''}
       ${locale.livello ? `<span class="badge-livello" style="background:${colore}20;color:${colore}">${locale.livello}</span>` : ''}
     </div>
     ${dotazioniHtml}
     ${locale.note ? `<p class="card-note">${locale.note}</p>` : ''}
+    <a class="btn-open-maps" href="${urlMaps(locale)}" target="_blank" rel="noopener">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+      Indicazioni
+    </a>
   `
-  card.addEventListener('click', () => {
+
+  card.addEventListener('click', e => {
+    if (e.target.closest('.btn-open-maps')) return
     document.querySelectorAll('.locale-card.attiva').forEach(c => c.classList.remove('attiva'))
     card.classList.add('attiva')
     centraSuLocale(locale)
@@ -104,7 +120,32 @@ function creaCardLocale(locale) {
   return card
 }
 
-// Collega tutti gli eventi ai bottoni del form
+function tipoIcon(tipo) {
+  return { Bar: '☕', Ristorante: '🍽', Negozio: '🛍', 'Centro commerciale': '🏬', Altro: '📍' }[tipo] || '📍'
+}
+
+// ── Filtri ───────────────────────────────────────────────────────────────────
+
+function collegaFiltri() {
+  document.querySelectorAll('.chip-filtro').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const key = chip.dataset.key
+      const val = chip.dataset.valore
+
+      filtriAttivi[key] = filtriAttivi[key] === val ? null : val
+
+      // Aggiorna stato visivo
+      document.querySelectorAll(`.chip-filtro[data-key="${key}"]`).forEach(c => {
+        c.classList.toggle('attivo', c.dataset.valore === (filtriAttivi[key] ?? ''))
+      })
+
+      renderLista()
+    })
+  })
+}
+
+// ── Form / UI ────────────────────────────────────────────────────────────────
+
 function collegaEventiUI() {
   const btnToggle = document.getElementById('btn-toggle-sidebar')
   const sidebar = document.getElementById('sidebar')
@@ -119,7 +160,6 @@ function collegaEventiUI() {
   document.getElementById('btn-salva').addEventListener('click', salvaLocale)
 }
 
-// Salva un nuovo locale
 async function salvaLocale() {
   const nome = document.getElementById('input-nome').value.trim()
   const tipo = document.getElementById('input-tipo').value
@@ -128,9 +168,9 @@ async function salvaLocale() {
   const note = document.getElementById('input-note').value.trim()
   const aggiunto_da = document.getElementById('input-nickname').value.trim() || 'Anonimo'
 
-  if (!nome) { mostraErrore('Il nome del locale è obbligatorio'); return }
-  if (!tipo) { mostraErrore('Seleziona la tipologia'); return }
-  if (!livello) { mostraErrore('Seleziona il livello di pulizia'); return }
+  if (!nome)          { mostraErrore('Il nome del locale è obbligatorio'); return }
+  if (!tipo)          { mostraErrore('Seleziona la tipologia'); return }
+  if (!livello)       { mostraErrore('Seleziona il livello di pulizia'); return }
   if (!dotazioni.length) { mostraErrore('Seleziona almeno una dotazione'); return }
 
   document.getElementById('form-errore').classList.add('nascosto')
@@ -163,16 +203,16 @@ async function salvaLocale() {
   }
 }
 
-function mostraErrore(messaggio) {
-  const errore = document.getElementById('form-errore')
-  errore.textContent = messaggio
-  errore.classList.remove('nascosto')
+function mostraErrore(msg) {
+  const el = document.getElementById('form-errore')
+  el.textContent = msg
+  el.classList.remove('nascosto')
 }
 
 function resetForm() {
   document.getElementById('input-nome').value = ''
-  const placeInput = document.getElementById('place-autocomplete')
-  if (placeInput) placeInput.value = ''
+  const p = document.getElementById('place-autocomplete')
+  if (p) p.value = ''
   document.getElementById('input-tipo').value = ''
   document.querySelectorAll('input[name="livello"]').forEach(r => r.checked = false)
   document.querySelectorAll('input[name="dotazione"]').forEach(c => c.checked = false)

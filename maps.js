@@ -11,14 +11,25 @@ function colorePin(livello) {
   return { Eccellente: '#43A047', Buono: '#FFB300', Sufficiente: '#FB8C00', Scarso: '#E53935' }[livello] || '#00897B'
 }
 
-// Crea un pin SVG colorato
+// Pin a forma di "bimbo sul fasciatoio" — sagoma arrotondata con iconina
 function creaPinSvg(livello) {
   const c = colorePin(livello)
   const el = document.createElement('div')
-  el.style.cssText = 'cursor:pointer;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));'
-  el.innerHTML = `<svg width="28" height="36" viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg">
-    <path d="M14 0C6.268 0 0 6.268 0 14c0 9.8 14 22 14 22S28 23.8 28 14C28 6.268 21.732 0 14 0z" fill="${c}"/>
-    <circle cx="14" cy="14" r="6" fill="white" opacity="0.95"/>
+  el.style.cssText = 'cursor:pointer;filter:drop-shadow(0 3px 5px rgba(0,0,0,0.28));transform-origin:bottom center;'
+  el.innerHTML = `<svg width="36" height="46" viewBox="0 0 36 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- ombra sotto -->
+    <ellipse cx="18" cy="44" rx="7" ry="2.5" fill="rgba(0,0,0,0.12)"/>
+    <!-- corpo principale: goccia arrotondata -->
+    <path d="M18 2C10.268 2 4 8.268 4 16C4 25.5 18 42 18 42C18 42 32 25.5 32 16C32 8.268 25.732 2 18 2Z"
+          fill="${c}" stroke="white" stroke-width="2"/>
+    <!-- cerchio interno chiaro -->
+    <circle cx="18" cy="15" r="10" fill="rgba(255,255,255,0.18)"/>
+    <!-- testa del bimbo -->
+    <circle cx="18" cy="10.5" r="3.8" fill="white"/>
+    <!-- corpo/fasciatoio (bimbo disteso) -->
+    <rect x="9.5" y="16" width="17" height="3.5" rx="1.75" fill="white"/>
+    <!-- piano fasciatoio -->
+    <rect x="7.5" y="19.5" width="21" height="1.5" rx="0.75" fill="rgba(255,255,255,0.55)"/>
   </svg>`
   return el
 }
@@ -140,14 +151,20 @@ function buildPopup(locale) {
     ? `<span style="font-size:0.72rem;background:#f0f0f0;color:#666;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:4px;margin-right:4px">${locale.tipo}</span>`
     : ''
 
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${locale.lat},${locale.lng}&travelmode=walking`
+
   return `
-    <div style="max-width:220px;font-family:'Segoe UI',sans-serif;padding:2px 0">
+    <div style="max-width:230px;font-family:'Segoe UI',sans-serif;padding:2px 0">
       <strong style="font-size:0.95rem;color:#222">${locale.nome}</strong><br/>
       <span style="color:#999;font-size:0.8rem">${locale.indirizzo || ''}</span>
-      <div style="margin-top:4px">${badgeTipo}${badgeLivello}</div>
+      <div style="margin-top:5px">${badgeTipo}${badgeLivello}</div>
       ${dotazioniHtml}
       ${locale.note ? `<p style="margin-top:6px;font-size:0.82rem;color:#555">${locale.note}</p>` : ''}
       ${distanzaHtml}
+      <a href="${mapsUrl}" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:6px 12px;background:#00897B;color:white;border-radius:20px;font-size:0.78rem;font-weight:600;text-decoration:none;">
+        ↗ Indicazioni a piedi
+      </a>
     </div>
   `
 }

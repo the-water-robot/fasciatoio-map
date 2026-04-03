@@ -206,8 +206,52 @@ fieldset legend {
   margin-bottom: 0;
 }
 
+/* ── Filtri ── */
+#filtri {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filtri-row {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.filtri-row::-webkit-scrollbar { display: none; }
+
+.chip-filtro {
+  flex-shrink: 0;
+  border: 1.5px solid #e8e8e8;
+  background: white;
+  color: #666;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.chip-filtro:hover {
+  border-color: #00897B;
+  color: #00897B;
+}
+
+.chip-filtro.attivo {
+  background: #00897B;
+  border-color: #00897B;
+  color: white;
+}
+
 /* ── Lista locali ── */
-#lista-locali { margin-top: 4px; }
+#lista-locali { margin-top: 6px; }
 
 .lista-header {
   display: flex;
@@ -343,6 +387,32 @@ fieldset legend {
   color: #888;
   margin-top: 6px;
   font-style: italic;
+}
+
+.btn-open-maps {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  padding: 5px 11px;
+  background: #f0faf9;
+  color: #00897B;
+  border: 1.5px solid #b2dfdb;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-open-maps:hover {
+  background: #e0f2f1;
+  border-color: #00897B;
+}
+
+.filtro-attivo-label {
+  color: #00897B;
+  font-weight: 600;
 }
 
 /* ── Mappa ── */
