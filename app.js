@@ -207,6 +207,63 @@ function collegaEventiUI() {
 
   document.getElementById('btn-annulla').addEventListener('click', resetForm)
   document.getElementById('btn-salva').addEventListener('click', salvaLocale)
+
+  // Modal info
+  document.getElementById('btn-info').addEventListener('click', apriModal)
+  document.getElementById('btn-chiudi-modal').addEventListener('click', chiudiModal)
+  document.getElementById('modal-info').addEventListener('click', e => {
+    if (e.target === e.currentTarget) chiudiModal()
+  })
+
+  // Share links
+  const APP_URL = 'https://fasciatoio-map.vercel.app'
+  const APP_TEXT = 'Trova un fasciatoio vicino a te 👶'
+  document.getElementById('btn-whatsapp').href = `https://wa.me/?text=${encodeURIComponent(APP_TEXT + '\n' + APP_URL)}`
+  document.getElementById('btn-telegram').href = `https://t.me/share/url?url=${encodeURIComponent(APP_URL)}&text=${encodeURIComponent(APP_TEXT)}`
+
+  if (navigator.share) {
+    document.getElementById('btn-share-nativo').classList.remove('nascosto')
+  }
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+
+let qrGenerato = false
+
+function apriModal() {
+  document.getElementById('modal-info').classList.remove('nascosto')
+  document.body.style.overflow = 'hidden'
+  if (!qrGenerato) {
+    QRCode.toCanvas(
+      document.getElementById('qr-canvas'),
+      'https://fasciatoio-map.vercel.app',
+      { width: 148, margin: 1, color: { dark: '#00897B', light: '#ffffff' } }
+    )
+    qrGenerato = true
+  }
+}
+
+function chiudiModal() {
+  document.getElementById('modal-info').classList.add('nascosto')
+  document.body.style.overflow = ''
+}
+
+async function copiLink() {
+  await navigator.clipboard.writeText('https://fasciatoio-map.vercel.app')
+  const btn = document.getElementById('btn-copia')
+  const orig = btn.textContent
+  btn.textContent = '✓ Copiato!'
+  setTimeout(() => btn.textContent = orig, 2000)
+}
+
+async function condividiNativo() {
+  try {
+    await navigator.share({
+      title: 'FasciatoioMap',
+      text: 'Trova un fasciatoio vicino a te 👶',
+      url: 'https://fasciatoio-map.vercel.app',
+    })
+  } catch {}
 }
 
 async function salvaLocale() {

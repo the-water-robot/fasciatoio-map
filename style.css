@@ -575,5 +575,221 @@ gmp-place-autocomplete {
   #map { height: 100vh; width: 100%; }
 }
 
+/* ── Pulsante info ── */
+.btn-info {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.15);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.btn-info:hover { background: rgba(255,255,255,0.28); }
+
+/* ── Modal overlay ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-box {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 380px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 14px;
+  background: linear-gradient(135deg, #00897B 0%, #00ACC1 100%);
+  flex-shrink: 0;
+}
+
+.modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: white;
+}
+
+.badge-demo {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  background: rgba(255,255,255,0.25);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.btn-chiudi-modal {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.15);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.btn-chiudi-modal:hover { background: rgba(255,255,255,0.28); }
+
+.modal-body {
+  overflow-y: auto;
+  padding: 0 18px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #e0f2f1 transparent;
+}
+
+.modal-section {
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.modal-section:last-child { border-bottom: none; }
+
+.modal-section-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.modal-desc {
+  font-size: 0.82rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* ── Aggiungi a Home ── */
+.add-home-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add-home-item {
+  background: #f8fffe;
+  border: 1px solid #e0f2f1;
+  border-radius: 10px;
+  padding: 9px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.add-home-platform {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #00897B;
+}
+
+.add-home-steps-text {
+  font-size: 0.79rem;
+  color: #555;
+}
+
+/* ── Share ── */
+.share-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid #e0e0e0;
+  background: white;
+  color: #555;
+  text-decoration: none;
+  transition: all 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.share-btn:hover { border-color: #00897B; color: #00897B; background: #f0faf9; }
+
+.share-btn-wa  { border-color: #25D366; color: #25D366; }
+.share-btn-wa:hover  { background: #f0fff4; border-color: #1ebe57; color: #1ebe57; }
+
+.share-btn-tg  { border-color: #2AABEE; color: #2AABEE; }
+.share-btn-tg:hover  { background: #f0f8ff; border-color: #1a9cd8; color: #1a9cd8; }
+
+.share-btn-native { border-color: #00897B; color: #00897B; }
+.share-btn-native:hover { background: #f0faf9; }
+
+/* ── QR Code ── */
+.qr-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  background: #f8fffe;
+  border: 1px solid #e0f2f1;
+  border-radius: 12px;
+}
+
+.qr-wrap canvas { border-radius: 6px; }
+
+.qr-label {
+  font-size: 0.72rem;
+  color: #999;
+}
+
+/* ── Buy me a coffee ── */
+.btn-bmc {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  background: #FFDD00;
+  color: #222;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-bmc:hover { opacity: 0.9; transform: translateY(-1px); }
+
 /* ── Utilità ── */
 .nascosto { display: none; }
