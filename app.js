@@ -108,7 +108,7 @@ function creaCardLocale(locale) {
     <div class="card-footer">
       <a class="btn-open-maps" href="${urlMaps(locale)}" target="_blank" rel="noopener" title="Apri Google Maps con indicazioni a piedi">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-        Indicazioni a piedi
+        Indicazioni
       </a>
     </div>
   `

@@ -163,7 +163,8 @@ function buildPopup(locale) {
       ${distanzaHtml}
       <a href="${mapsUrl}" target="_blank" rel="noopener"
          style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:6px 12px;background:#00897B;color:white;border-radius:20px;font-size:0.78rem;font-weight:600;text-decoration:none;">
-        ↗ Indicazioni a piedi
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        Indicazioni
       </a>
     </div>
   `
