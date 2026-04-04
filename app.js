@@ -89,7 +89,6 @@ function creaCardLocale(locale) {
 
   const card = document.createElement('div')
   card.className = 'locale-card'
-  card.style.borderLeftColor = colore
 
   card.innerHTML = `
     <div class="card-top">
