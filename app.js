@@ -228,19 +228,9 @@ function collegaEventiUI() {
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 
-let qrGenerato = false
-
 function apriModal() {
   document.getElementById('modal-info').classList.remove('nascosto')
   document.body.style.overflow = 'hidden'
-  if (!qrGenerato) {
-    QRCode.toCanvas(
-      document.getElementById('qr-canvas'),
-      'https://fasciatoio-map.vercel.app',
-      { width: 148, margin: 1, color: { dark: '#00897B', light: '#ffffff' } }
-    )
-    qrGenerato = true
-  }
 }
 
 function chiudiModal() {
