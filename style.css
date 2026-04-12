@@ -525,11 +525,47 @@ fieldset legend {
   height: 100vh;
 }
 
-/* ── Place Autocomplete ── */
-gmp-place-autocomplete {
-  width: 100%;
-  --gmpx-color-surface: white;
-  --gmpx-color-on-surface: #333;
+/* ── Autocomplete indirizzo ── */
+.autocomplete-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  background: white;
+  border: 1.5px solid #e0e0e0;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.autocomplete-item {
+  padding: 9px 12px;
+  font-size: 0.82rem;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 1px solid #f5f5f5;
+  line-height: 1.35;
+}
+
+.autocomplete-item:last-child { border-bottom: none; }
+.autocomplete-item:hover { background: #f0faf9; color: #00897B; }
+
+/* ── Leaflet popup ── */
+.popup-fasciatoio .leaflet-popup-content-wrapper {
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  padding: 2px;
+}
+
+.popup-fasciatoio .leaflet-popup-content {
+  margin: 10px 14px;
+}
+
+.popup-fasciatoio .leaflet-popup-tip {
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
 /* ── Toggle sidebar (mobile) ── */

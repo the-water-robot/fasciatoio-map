@@ -1,4 +1,4 @@
-// maps.js — logica Google Maps
+// maps.js — logica mappa OpenStreetMap + Leaflet
 
 let mappa
 let selectedPlace = null
@@ -11,119 +11,139 @@ function colorePin(livello) {
   return { Eccellente: '#43A047', Buono: '#FFB300', Sufficiente: '#FB8C00', Scarso: '#E53935' }[livello] || '#00897B'
 }
 
-// Pin a forma di "bimbo sul fasciatoio" — sagoma arrotondata con iconina
-function creaPinSvg(livello) {
+// Pin SVG come DivIcon Leaflet
+function creaPinIcon(livello) {
   const c = colorePin(livello)
-  const el = document.createElement('div')
-  el.style.cssText = 'cursor:pointer;filter:drop-shadow(0 3px 5px rgba(0,0,0,0.28));transform-origin:bottom center;'
-  el.innerHTML = `<svg width="36" height="46" viewBox="0 0 36 46" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <!-- ombra sotto -->
-    <ellipse cx="18" cy="44" rx="7" ry="2.5" fill="rgba(0,0,0,0.12)"/>
-    <!-- corpo principale: goccia arrotondata -->
-    <path d="M18 2C10.268 2 4 8.268 4 16C4 25.5 18 42 18 42C18 42 32 25.5 32 16C32 8.268 25.732 2 18 2Z"
-          fill="${c}" stroke="white" stroke-width="2"/>
-    <!-- cerchio interno chiaro -->
-    <circle cx="18" cy="15" r="10" fill="rgba(255,255,255,0.18)"/>
-    <!-- testa del bimbo -->
-    <circle cx="18" cy="10.5" r="3.8" fill="white"/>
-    <!-- corpo/fasciatoio (bimbo disteso) -->
-    <rect x="9.5" y="16" width="17" height="3.5" rx="1.75" fill="white"/>
-    <!-- piano fasciatoio -->
-    <rect x="7.5" y="19.5" width="21" height="1.5" rx="0.75" fill="rgba(255,255,255,0.55)"/>
-  </svg>`
-  return el
+  return L.divIcon({
+    className: '',
+    iconSize: [36, 46],
+    iconAnchor: [18, 42],
+    popupAnchor: [0, -38],
+    html: `<div style="cursor:pointer;filter:drop-shadow(0 3px 5px rgba(0,0,0,0.28));">
+      <svg width="36" height="46" viewBox="0 0 36 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="18" cy="44" rx="7" ry="2.5" fill="rgba(0,0,0,0.12)"/>
+        <path d="M18 2C10.268 2 4 8.268 4 16C4 25.5 18 42 18 42C18 42 32 25.5 32 16C32 8.268 25.732 2 18 2Z"
+              fill="${c}" stroke="white" stroke-width="2"/>
+        <circle cx="18" cy="15" r="10" fill="rgba(255,255,255,0.18)"/>
+        <circle cx="18" cy="10.5" r="3.8" fill="white"/>
+        <rect x="9.5" y="16" width="17" height="3.5" rx="1.75" fill="white"/>
+        <rect x="7.5" y="19.5" width="21" height="1.5" rx="0.75" fill="rgba(255,255,255,0.55)"/>
+      </svg>
+    </div>`
+  })
 }
 
-// Inizializza la mappa usando importLibrary (async)
-async function initMappa() {
-  const { Map } = await google.maps.importLibrary('maps')
-  const { AdvancedMarkerElement } = await google.maps.importLibrary('marker')
-  const { PlaceAutocompleteElement } = await google.maps.importLibrary('places')
+// Init mappa Leaflet
+function initMappa() {
+  const centroDef = [45.4641, 9.1919]
 
-  const centroDef = { lat: 45.4641, lng: 9.1919 }
-
-  mappa = new Map(document.getElementById('map'), {
+  mappa = L.map('map', {
     center: centroDef,
     zoom: 13,
-    mapId: 'fasciatoio-map',
-    mapTypeControl: false,
-    fullscreenControl: false,
-    streetViewControl: false,
+    zoomControl: false,
   })
 
+  L.control.zoom({ position: 'bottomright' }).addTo(mappa)
+
+  // CartoDB Voyager — clean, moderno, ottimo per pin colorati
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 20,
+    subdomains: 'abcd',
+  }).addTo(mappa)
+
+  // Geolocalizzazione
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude }
         posizioneUtente = userPos
-        mappa.setCenter(userPos)
+        mappa.setView([userPos.lat, userPos.lng], 13)
 
-        const dot = document.createElement('div')
-        dot.style.cssText = 'width:18px;height:18px;background:#4285F4;border:3px solid white;border-radius:50%;box-shadow:0 0 0 4px rgba(66,133,244,0.2);'
+        L.circleMarker([userPos.lat, userPos.lng], {
+          radius: 8,
+          fillColor: '#4285F4',
+          color: 'white',
+          weight: 3,
+          fillOpacity: 1,
+        }).addTo(mappa)
 
-        new AdvancedMarkerElement({
-          position: userPos,
-          map: mappa,
-          title: 'La tua posizione',
-          content: dot,
-          zIndex: 999,
-        })
-
-        // Riordina la lista una volta nota la posizione
         riordinaLista()
       },
       () => console.log('Geolocalizzazione non disponibile')
     )
   }
 
-  // PlaceAutocompleteElement per il form
-  const placeAutocomplete = new PlaceAutocompleteElement({ componentRestrictions: { country: 'it' } })
-  placeAutocomplete.id = 'place-autocomplete'
-  const inputIndirizzo = document.getElementById('input-indirizzo')
-  inputIndirizzo.parentNode.replaceChild(placeAutocomplete, inputIndirizzo)
-
-  const onPlaceSelect = async (e) => {
-    try {
-      const place = e.place
-      await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] })
-      selectedPlace = { lat: place.location.lat(), lng: place.location.lng(), indirizzo: place.formattedAddress || place.displayName }
-    } catch (err) {
-      console.error('Errore fetchFields:', err)
-    }
-  }
-  placeAutocomplete.addEventListener('gmp-placeselect', onPlaceSelect)
-  placeAutocomplete.addEventListener('gmp-select', onPlaceSelect)
-
-  window._AdvancedMarkerElement = AdvancedMarkerElement
+  setupAutocompleteIndirizzo()
   initApp()
 }
 
-initMappa()
+// ── Autocomplete indirizzo con Nominatim ────────────────────────────────────
 
-// Aggiunge un marker colorato sulla mappa per un locale
+function setupAutocompleteIndirizzo() {
+  const input = document.getElementById('input-indirizzo')
+  if (!input) return
+
+  const dropdown = document.createElement('div')
+  dropdown.className = 'autocomplete-dropdown nascosto'
+  input.parentNode.style.position = 'relative'
+  input.parentNode.appendChild(dropdown)
+
+  let debounceTimer
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer)
+    selectedPlace = null
+    const q = input.value.trim()
+    if (q.length < 3) { dropdown.classList.add('nascosto'); return }
+    debounceTimer = setTimeout(() => cercaIndirizzo(q, dropdown, input), 350)
+  })
+
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.add('nascosto')
+    }
+  })
+}
+
+async function cercaIndirizzo(query, dropdown, input) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=it&limit=5&addressdetails=1`
+    const res = await fetch(url, { headers: { 'User-Agent': 'FasciatoioMap/1.0' } })
+    const results = await res.json()
+
+    if (!results.length) { dropdown.classList.add('nascosto'); return }
+
+    dropdown.innerHTML = ''
+    results.forEach(r => {
+      const item = document.createElement('div')
+      item.className = 'autocomplete-item'
+      item.textContent = r.display_name
+      item.addEventListener('click', () => {
+        input.value = r.display_name
+        selectedPlace = { lat: parseFloat(r.lat), lng: parseFloat(r.lon), indirizzo: r.display_name }
+        dropdown.classList.add('nascosto')
+      })
+      dropdown.appendChild(item)
+    })
+    dropdown.classList.remove('nascosto')
+  } catch (err) {
+    console.error('Errore ricerca indirizzo:', err)
+  }
+}
+
+// ── Marker e popup ──────────────────────────────────────────────────────────
+
 function aggiungiMarker(locale) {
-  const pinEl = creaPinSvg(locale.livello)
+  const marker = L.marker([locale.lat, locale.lng], { icon: creaPinIcon(locale.livello) })
+    .addTo(mappa)
+    .bindPopup(buildPopup(locale), { maxWidth: 250, className: 'popup-fasciatoio' })
 
-  const marker = new window._AdvancedMarkerElement({
-    position: { lat: locale.lat, lng: locale.lng },
-    map: mappa,
-    title: locale.nome,
-    content: pinEl,
-    gmpClickable: true,
-  })
-
-  const infoWindow = new google.maps.InfoWindow({ content: buildPopup(locale) })
-
-  marker.addEventListener('gmp-click', () => {
-    if (markerSelezionato) markerSelezionato.close()
-    infoWindow.open({ anchor: marker, map: mappa })
-    markerSelezionato = infoWindow
-  })
+  marker.on('click', () => { markerSelezionato = marker })
 
   markers[locale.id] = marker
 }
 
-// Costruisce il contenuto dell'InfoWindow
 function buildPopup(locale) {
   const c = colorePin(locale.livello)
 
@@ -154,7 +174,7 @@ function buildPopup(locale) {
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${locale.lat},${locale.lng}&travelmode=walking`
 
   return `
-    <div style="max-width:230px;font-family:'Segoe UI',sans-serif;padding:2px 0">
+    <div style="font-family:'Segoe UI',sans-serif;padding:2px 0">
       <strong style="font-size:0.95rem;color:#222">${locale.nome}</strong><br/>
       <span style="color:#999;font-size:0.8rem">${locale.indirizzo || ''}</span>
       <div style="margin-top:5px">${badgeTipo}${badgeLivello}</div>
@@ -170,27 +190,23 @@ function buildPopup(locale) {
   `
 }
 
-// Centra la mappa su un locale specifico
+// ── Navigazione mappa ───────────────────────────────────────────────────────
+
 function centraSuLocale(locale) {
   const sidebar = document.getElementById('sidebar')
   if (window.innerWidth <= 768) sidebar.classList.remove('aperto')
 
   setTimeout(() => {
-    mappa.setCenter({ lat: locale.lat, lng: locale.lng })
-    mappa.setZoom(16)
+    mappa.setView([locale.lat, locale.lng], 16)
     if (markers[locale.id]) {
-      google.maps.event.trigger(markers[locale.id], 'gmp-click')
-      markers[locale.id].dispatchEvent(new Event('gmp-click'))
-      // Apri direttamente
-      if (markerSelezionato) markerSelezionato.close()
-      const iw = new google.maps.InfoWindow({ content: buildPopup(locale) })
-      iw.open({ anchor: markers[locale.id], map: mappa })
-      markerSelezionato = iw
+      markers[locale.id].openPopup()
+      markerSelezionato = markers[locale.id]
     }
   }, window.innerWidth <= 768 ? 350 : 0)
 }
 
-// Formula Haversine
+// ── Haversine ───────────────────────────────────────────────────────────────
+
 function calcolaDistanzaKm(lat1, lng1, lat2, lng2) {
   const R = 6371
   const dLat = (lat2 - lat1) * Math.PI / 180
@@ -200,7 +216,8 @@ function calcolaDistanzaKm(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
-// Legge le coordinate dall'autocomplete o geocodifica il testo
+// ── Geocodifica Nominatim ───────────────────────────────────────────────────
+
 async function getCoordinateDaAutocomplete() {
   if (selectedPlace) {
     const result = selectedPlace
@@ -208,19 +225,23 @@ async function getCoordinateDaAutocomplete() {
     return result
   }
 
-  const placeInput = document.getElementById('place-autocomplete')
-  const testo = placeInput?.value || placeInput?.innerText || ''
-  if (!testo.trim()) return null
+  const input = document.getElementById('input-indirizzo')
+  const testo = input?.value?.trim() || ''
+  if (!testo) return null
 
-  const { Geocoder } = await google.maps.importLibrary('geocoding')
-  const geocoder = new Geocoder()
   try {
-    const { results } = await geocoder.geocode({ address: testo, region: 'it' })
-    if (results?.length) {
-      return { lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng(), indirizzo: results[0].formatted_address }
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(testo)}&countrycodes=it&limit=1`
+    const res = await fetch(url, { headers: { 'User-Agent': 'FasciatoioMap/1.0' } })
+    const results = await res.json()
+    if (results.length) {
+      return { lat: parseFloat(results[0].lat), lng: parseFloat(results[0].lon), indirizzo: results[0].display_name }
     }
   } catch (err) {
     console.error('Errore geocoding:', err)
   }
   return null
 }
+
+// ── Boot ────────────────────────────────────────────────────────────────────
+
+initMappa()

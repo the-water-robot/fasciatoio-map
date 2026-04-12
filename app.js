@@ -306,8 +306,7 @@ function mostraErrore(msg) {
 
 function resetForm() {
   document.getElementById('input-nome').value = ''
-  const p = document.getElementById('place-autocomplete')
-  if (p) p.value = ''
+  document.getElementById('input-indirizzo').value = ''
   document.getElementById('input-tipo').value = ''
   document.querySelectorAll('input[name="livello"]').forEach(r => r.checked = false)
   document.querySelectorAll('input[name="dotazione"]').forEach(c => c.checked = false)
